@@ -17,11 +17,12 @@ socket.on('newMessage', function(message){
 
 jQuery('#message-form').on('submit', function(e){
     e.preventDefault();
-    socket.emit('createMessage', {
+    var messageTextBox = jQuery('[name=message]');
+     socket.emit('createMessage', {
         from : 'User',
-        text : jQuery('[name=message]').val()
+        text : messageTextBox.val()
     }, function(){
-
+        messageTextBox.val('');
     })
 });
 
@@ -31,13 +32,16 @@ locationButton.on('click', function(){
         return alert('Geolocation tidak suport bowser anda');
     }
 
+    locationButton.attr('disabled', 'disabled').text('Sending location ...');
     navigator.geolocation.getCurrentPosition(function (position){
         console.log(position);
+        locationButton.removeAttr('disabled').text('Send location');
         socket.emit('createLocationMessage', {
             lat : position.coords.latitude,
             lng : position.coords.longitude
         })
     }, function(){
+        locationButton.removeAttr('disabled').text('Send location');
         alert('unable to fetch location');
     });
 });
